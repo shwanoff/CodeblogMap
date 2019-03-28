@@ -26,10 +26,10 @@ namespace Map
             Console.WriteLine(dict.Search(101) ?? "Не найдено");
 
             dict.Remove(7);
-            dict.Remove(101);
             dict.Remove(3);
             dict.Remove(1);
-            
+            dict.Remove(101);
+
 
             foreach (var item in dict)
             {

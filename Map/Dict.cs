@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Map
 {
@@ -7,6 +8,7 @@ namespace Map
     {
         private int size = 100;
         private Item<TKey, TValue>[] Items;
+        private List<TKey> Keys = new List<TKey>();
 
         public Dict()
         {
@@ -17,8 +19,14 @@ namespace Map
         {
             var hash = GetHash(item.Key);
 
+            if(Keys.Contains(item.Key))
+            {
+                return;
+            }
+
             if(Items[hash] == null)
             {
+                Keys.Add(item.Key);
                 Items[hash] = item;
             }
             else
@@ -28,6 +36,7 @@ namespace Map
                 {
                     if (Items[i] == null)
                     {
+                        Keys.Add(item.Key);
                         Items[i] = item;
                         placed = true;
                         break;
@@ -45,6 +54,7 @@ namespace Map
                     {
                         if (Items[i] == null)
                         {
+                            Keys.Add(item.Key);
                             Items[i] = item;
                             placed = true;
                             break;
@@ -79,14 +89,30 @@ namespace Map
         {
             var hash = GetHash(key);
 
+            if(!Keys.Contains(key))
+            {
+                return;
+            }
+
             if (Items[hash] == null)
             {
+                for (var i = 0; i < size; i++)
+                {
+                    if (Items[i] != null && Items[i].Key.Equals(key))
+                    {
+                        Items[i] = null;
+                        Keys.Remove(key);
+                        return;
+                    }
+                }
+
                 return;
             }
 
             if (Items[hash].Key.Equals(key))
             {
                 Items[hash] = null;
+                Keys.Remove(key);
             }
             else
             {
@@ -101,6 +127,7 @@ namespace Map
                     if (Items[i].Key.Equals(key))
                     {
                         Items[i] = null;
+                        Keys.Remove(key);
                         return;
                     }
                 }
@@ -117,6 +144,7 @@ namespace Map
                         if (Items[i].Key.Equals(key))
                         {
                             Items[i] = null;
+                            Keys.Remove(key);
                             return;
                         }
                     }
@@ -128,8 +156,21 @@ namespace Map
         {
             var hash = GetHash(key);
 
+            if(!Keys.Contains(key))
+            {
+                return default(TValue);
+            }
+
             if(Items[hash] == null)
             {
+                foreach(var item in Items)
+                {
+                    if(item.Key.Equals(key))
+                    {
+                        return item.Value;
+                    }
+                }
+
                 return default(TValue);
             }
 
